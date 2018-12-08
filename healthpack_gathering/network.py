@@ -42,6 +42,7 @@ class ACNetwork(object):
                                               biases_initializer=None)
             if scope != 'global' and not play:
                 self.actions = tf.placeholder(shape=[None], dtype=tf.int32)
+                # One-Hot Encoding
                 self.actions_onehot = tf.one_hot(self.actions, cfg.ACTION_DIM, dtype=tf.float32)
                 self.target_v = tf.placeholder(shape=[None], dtype=tf.float32)
                 self.advantages = tf.placeholder(shape=[None], dtype=tf.float32)

@@ -56,6 +56,7 @@ class Agent(object):
         # The Below code is related to setting up the Doom environment
         game = DoomGame()
         game.set_doom_scenario_path("../scenarios/{}".format('health_gathering_supreme.wad' if cfg.IS_SUPREME_VERSION else 'health_gathering.wad'))
+
         game.set_doom_map("map01")
         game.set_screen_resolution(ScreenResolution.RES_640X480)
         game.set_screen_format(ScreenFormat.RGB24)

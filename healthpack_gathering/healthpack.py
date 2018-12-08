@@ -14,7 +14,7 @@ import configs as cfg
 
 max_episode_length = 2100
 gamma = .99  # discount rate for advantage estimation and reward discounting
-s_size = 6400 # 80 * 80 * 1
+s_size = 6400  # 80 * 80 * 1
 a_size = 3  # Agent can move Left, Right, or Fire
 load_model = False
 
@@ -27,15 +27,24 @@ def main_train(tf_configs=None):
     if not os.path.exists(cfg.model_path):
         os.makedirs(cfg.model_path)
 
-    global_episodes = tf.Variable(0, dtype=tf.int32, name='global_episodes', trainable=False)
+    global_episodes = tf.Variable(
+        0, dtype=tf.int32, name='global_episodes', trainable=False)
     with tf.device("/gpu:0"):
         optimizer = tf.train.RMSPropOptimizer(learning_rate=1e-5)
-        global_network = network.ACNetwork('global', optimizer, img_shape=cfg.IMG_SHAPE)
+        global_network = network.ACNetwork(
+            'global', optimizer, img_shape=cfg.IMG_SHAPE)
         num_workers = cfg.AGENTS_NUM
         agents = []
         # Create worker classes
         for i in range(num_workers):
-            agents.append(agent.Agent(DoomGame(), i, s_size, a_size, optimizer, cfg.model_path, global_episodes))
+            #agents.append(agent.Agent(DoomGame(), i, s_size, a_size, optimizer, cfg.model_path, global_episodes))
+            agents.append(
+                agent.Agent(
+                    game=DoomGame(),
+                    name=i,
+                    optimizer=optimizer,
+                    model_path=cfg.model_path,
+                    global_episodes=global_episodes))
     saver = tf.train.Saver(max_to_keep=100)
 
     with tf.Session(config=tf_configs) as sess:
@@ -81,8 +90,10 @@ if __name__ == '__main__':
     train = cfg.IS_TRAIN
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
+
     if train:
+        print('train times')
         main_train(tf_configs=config)
     else:
+        print('play times')
         main_play(tf_configs=config)
-

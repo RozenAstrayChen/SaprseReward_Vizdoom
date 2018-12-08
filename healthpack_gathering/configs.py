@@ -4,9 +4,9 @@ IMG_SHAPE = (80, 80)
 a_size = 3
 ACTION_DIM = 2 ** a_size - 2  # remove (True, True, True) and (True, True, False)[Left, Right, Forward]
 model_path = './check_point/supreme/'
-model_file = 'model-10000.ckpt'
+model_file = 'model-7400.ckpt'
 
-IS_SUPREME_VERSION = True
+IS_SUPREME_VERSION = False
 IS_TRAIN = False
 AGENTS_NUM = 16
 
