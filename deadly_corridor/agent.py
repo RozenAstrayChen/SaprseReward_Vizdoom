@@ -238,7 +238,7 @@ class Agent(object):
 
                 # Periodically save gifs of episodes, model parameters, and summary statistics.
                 if episode_count % 5 == 0 and episode_count != 0:
-                    if episode_count % 50 == 0 and self.name == 'worker_0':
+                    if episode_count % 200 == 0 and self.name == 'worker_0':
                         saver.save(sess, self.model_path+'/model-'+str(episode_count)+'.ckpt')
                         print("Episode count {}, saved Model, time costs {}".format(episode_count, time.time()-start_t))
                         start_t = time.time()
@@ -358,7 +358,8 @@ class Agent(object):
         kill_delta = kill_count - last_total_kills
         reward = 0
         if kill_delta > 0:
-            reward = kill_delta * 30.
+            #reward = kill_delta * 30.
+            reward = kill_delta * 100.
         return reward, kill_count
 
     @staticmethod
