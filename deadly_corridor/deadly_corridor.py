@@ -19,7 +19,7 @@ max_episode_length = 2100
 gamma = .99  # discount rate for advantage estimation and reward discounting
 s_size = 6400 # 80 * 80 * 1
 a_size = 3  # Agent can move Left, Right, or Fire
-load_model = False
+load_model = True
 
 model_path = './check_point'
 
@@ -33,7 +33,7 @@ def main_train(tf_configs=None):
         os.makedirs(model_path)
 
     global_episodes = tf.Variable(0, dtype=tf.int32, name='global_episodes', trainable=False)
-    with tf.device('/gpu:3'):
+    with tf.device('/gpu:0'):
         optimizer = tf.train.RMSPropOptimizer(learning_rate=1e-5)
         master_network = network.ACNetwork('global', optimizer, shape=cfg.img_shape)  # Generate global network
         num_workers = 16
@@ -66,6 +66,7 @@ def main_train(tf_configs=None):
 
 
 def main_play(tf_configs=None):
+    
     tf.reset_default_graph()
 
     with tf.Session(config=tf_configs) as sess:
@@ -75,7 +76,7 @@ def main_play(tf_configs=None):
         print('Loading Model...')
         saver = tf.train.Saver()
         ckpt = tf.train.get_checkpoint_state(model_path)
-        saver.restore(sess, os.path.join(model_path, 'model-46900.ckpt'))
+        saver.restore(sess, os.path.join(model_path, 'model-47450.ckpt'))
         print('Successfully loaded!')
 
         ag.play_game(sess, 10)

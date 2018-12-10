@@ -273,6 +273,7 @@ class Agent(object):
                     coord.request_stop()
 
     def play_game(self, sess, episode_num):
+        from time import sleep 
         if not isinstance(sess, tf.Session):
             raise TypeError('saver should be tf.train.Saver')
 
@@ -288,6 +289,7 @@ class Agent(object):
             rnn_state = self.local_AC_network.state_init
 
             while not self.env.is_episode_finished():
+                sleep(0.1)
                 state = self.env.get_state()
                 s = utils.process_frame(state.screen_buffer, self.img_shape)
                 a_dist, v, rnn_state = sess.run(
