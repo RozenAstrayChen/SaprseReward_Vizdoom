@@ -73,7 +73,7 @@ class Agent(object):
         game.add_available_button(Button.TURN_LEFT)
         game.add_available_button(Button.TURN_RIGHT)
         game.add_available_button(Button.ATTACK)
-        game.add_available_button(Button.SPEED)
+        #game.add_available_button(Button.SPEED)
         game.add_available_game_variable(GameVariable.AMMO2)
         game.add_available_game_variable(GameVariable.HEALTH)
         game.add_available_game_variable(GameVariable.USER2)
@@ -154,6 +154,7 @@ class Agent(object):
                     state = [s, game_vars]
 
                     reward, v, end, a_index = self.step(state, sess)
+                    # testing
 
                     episode_reward += reward
 
@@ -203,7 +204,7 @@ class Agent(object):
 
                 # Periodically save gifs of episodes, model parameters, and summary statistics.
                 if episode_count % 5 == 0 and episode_count != 0:
-                    if episode_count % 50 == 0 and self.name == cfg.AGENT_MONITOR:
+                    if episode_count % 200 == 0 and self.name == cfg.AGENT_MONITOR:
                         saver.save(sess, self.model_path+'/model-'+str(episode_count)+'.ckpt')
                         print("Episode count {}, saved Model, time costs {}".format(episode_count, time.time()-start_t))
                         start_t = time.time()
@@ -236,6 +237,7 @@ class Agent(object):
                     coord.request_stop()
 
     def play_game(self, sess, episode_num):
+        from time import sleep
         if not isinstance(sess, tf.Session):
             raise TypeError('saver should be tf.train.Saver')
 
@@ -256,6 +258,7 @@ class Agent(object):
             s_t = time.time()
 
             while not self.env.is_episode_finished():
+                sleep(0.05)
                 game_vars = self.env.get_state().game_variables
                 state = [s, game_vars[:-1]]
 
