@@ -28,10 +28,11 @@ class ACNetwork(object):
                                       kernel_size=[4, 4], stride=2, padding='SAME')
             self.conv_3 = slim.conv2d(activation_fn=tf.nn.relu, inputs=self.conv_2, num_outputs=64,
                                       kernel_size=[3, 3], stride=1, padding='SAME')
-            #self.fc = slim.fully_connected(slim.flatten(self.conv_3), 512, activation_fn=tf.nn.elu)
-            #self.new_fc = tf.concat([self.fc, self.game_variables], axis=1)
+            self.fc = slim.fully_connected(slim.flatten(self.conv_3), 512, activation_fn=tf.nn.elu)
+            self.new_fc = tf.concat([self.fc, self.game_variables], axis=1)
 
             # LSTM
+            rnn_in = tf.expand_dims(self.new_fc, [0])
             lstm_cell = tf.contrib.rnn.BasicLSTMCell(cfg.RNN_DIM, state_is_tuple=True)
             c_init = np.zeros((1, lstm_cell.state_size.c), np.float32)
             h_init = np.zeros((1, lstm_cell.state_size.h), np.float32)
@@ -39,7 +40,6 @@ class ACNetwork(object):
             c_in = tf.placeholder(tf.float32, [1, lstm_cell.state_size.c])
             h_in = tf.placeholder(tf.float32, [1, lstm_cell.state_size.h])
             self.state_in = (c_in, h_in)
-            rnn_in = tf.expand_dims(slim.flatten(self.conv_3), [0])
             step_size = tf.shape(self.inputs)[:1]
             state_in = tf.contrib.rnn.LSTMStateTuple(c_in, h_in)
             lstm_outputs, lstm_state = tf.nn.dynamic_rnn(lstm_cell,
@@ -49,15 +49,14 @@ class ACNetwork(object):
                                                          time_major=False)
             lstm_c, lstm_h = lstm_state
             self.state_out = (lstm_c[:1, :], lstm_h[:1, :])
-            self.rnn_out = tf.reshape(lstm_outputs, [-1, cfg.RNN_DIM])
+            rnn_out = lstm_outputs[0]
             '''lstm'''
-            self.new_fc = tf.concat([self.rnn_out, self.game_variables], axis=1)
 
-            self.policy = slim.fully_connected(self.new_fc,
+            self.policy = slim.fully_connected(rnn_out,
                                                cfg.ACTION_DIM,
                                                activation_fn=tf.nn.softmax,
                                                biases_initializer=None)
-            self.value = slim.fully_connected(self.new_fc,
+            self.value = slim.fully_connected(rnn_out,
                                               1,
                                               activation_fn=None,
                                               biases_initializer=None)

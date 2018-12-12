@@ -321,7 +321,8 @@ class Agent(object):
                 game_vars = self.env.get_state().game_variables
                 state = [s, game_vars[:-1]]
 
-                reward, v, rnn_state, end, a_index = self.step(state, rnn_state, sess)
+                reward, v, rnn_state, end, a_index = self.step(
+                    state, rnn_state, sess)
 
                 if step >= cfg.SKIP_FRAME_NUM:
                     reward_list.append(reward)
@@ -370,6 +371,7 @@ class Agent(object):
                 self.local_AC_network.state_in[1]: rnn_state[1]
             })
         a_index = self.choose_action_index(a_dist[0], deterministic=False)
+
         if self.play:
             self.env.make_action(self.actions[a_index])
         else:

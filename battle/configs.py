@@ -1,3 +1,4 @@
+import numpy as np
 # coding: utf-8
 
 IMG_SHAPE = (80, 80)
@@ -12,12 +13,12 @@ SCENARIO_PATH = '../scenarios/D3_battle.cfg'
 
 IS_SUPREME_VERSION = True
 IS_TRAIN = True
-AGENTS_NUM = 16
+AGENTS_NUM = 1
 RNN_DIM = 512
 
 HIST_LEN = 4
 
-
+'''
 def button_combinations():
     actions = []
     m_forward = [[True], [False]]  # move forward
@@ -32,6 +33,22 @@ def button_combinations():
                 for m in attack:
                     #for n in speed:
                     actions.append(i+j+k+m)
+    return actions
+'''
+'''
+7 action type
+    0. forward
+    1. backward
+    2. left forward
+    3. right forward
+    4. turn left
+    5. turn right
+    6. speed
+'''
+
+
+def button_combinations():
+    actions = np.identity(8, dtype=int).tolist()
     return actions
 
 ACTION_DIM = len(button_combinations())
