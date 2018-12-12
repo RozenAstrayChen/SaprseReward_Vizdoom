@@ -84,7 +84,7 @@ def main_play(tf_configs=None):
 
 if __name__ == '__main__':
 
-    train = False
+    train = True
     config = tf.ConfigProto(allow_soft_placement=True)
     config.gpu_options.allow_growth = True
     if train:

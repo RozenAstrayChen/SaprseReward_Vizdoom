@@ -359,7 +359,7 @@ class Agent(object):
         reward = 0
         if kill_delta > 0:
             #reward = kill_delta * 30.
-            reward = kill_delta * 100.
+            reward = kill_delta * 50.
         return reward, kill_count
 
     @staticmethod

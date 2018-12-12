@@ -1,4 +1,6 @@
 *.pyc
+check_point/*
+summaries/*
 .idea
 __pycache__
 _vizdoom.ini
