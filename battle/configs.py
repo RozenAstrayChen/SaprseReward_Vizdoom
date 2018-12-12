@@ -13,6 +13,7 @@ SCENARIO_PATH = '../scenarios/D3_battle.cfg'
 IS_SUPREME_VERSION = True
 IS_TRAIN = True
 AGENTS_NUM = 16
+RNN_DIM = 512
 
 HIST_LEN = 4
 

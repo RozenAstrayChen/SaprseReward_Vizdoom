@@ -28,8 +28,29 @@ class ACNetwork(object):
                                       kernel_size=[4, 4], stride=2, padding='SAME')
             self.conv_3 = slim.conv2d(activation_fn=tf.nn.relu, inputs=self.conv_2, num_outputs=64,
                                       kernel_size=[3, 3], stride=1, padding='SAME')
-            self.fc = slim.fully_connected(slim.flatten(self.conv_3), 512, activation_fn=tf.nn.elu)
-            self.new_fc = tf.concat([self.fc, self.game_variables], axis=1)
+            #self.fc = slim.fully_connected(slim.flatten(self.conv_3), 512, activation_fn=tf.nn.elu)
+            self.flatten = slim.flatten(self.conv_3)
+            # ADD LSTM
+            lstm_cell = tf.contrib.rnn.BasicLSTMCell(cfg.RNN_DIM, state_is_tuple=True)
+            c_init = np.zeros((1, lstm_cell.state_size.c), np.float32)
+            h_init = np.zeros((1, lstm_cell.state_size.h), np.float32)
+            self.state_init = [c_init, h_init]
+            c_in = tf.placeholder(tf.float32, [1, lstm_cell.state_size.c])
+            h_in = tf.placeholder(tf.float32, [1, lstm_cell.state_size.h])
+            self.state_in = (c_in, h_in)
+            rnn_in = tf.expand_dims(self.flatten, [0])
+            step_size = tf.shape(self.inputs)[:1]
+            state_in = tf.contrib.rnn.LSTMStateTuple(c_in, h_in)
+            lstm_outputs, lstm_state = tf.nn.dynamic_rnn(lstm_cell,
+                                                         rnn_in,
+                                                         initial_state=state_in,
+                                                         sequence_length=step_size,
+                                                         time_major=False)
+            lstm_c, lstm_h = lstm_state
+            self.state_out = (lstm_c[:1, :], lstm_h[:1, :])
+            self.rnn_out = tf.reshape(lstm_outputs, [-1, 512])
+            '''lstm'''
+            self.new_fc = tf.concat([self.rnn_out, self.game_variables], axis=1)
 
             self.policy = slim.fully_connected(self.new_fc,
                                                cfg.ACTION_DIM,
