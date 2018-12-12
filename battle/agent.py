@@ -169,6 +169,7 @@ class Agent(object):
                                            self.img_shape)
                 s = np.stack((st_s, st_s, st_s, st_s), axis=2)
                 episode_st = time.time()
+                # init rnn
                 rnn_state = self.local_AC_network.state_init
 
                 while not self.env.is_episode_finished():
@@ -313,13 +314,14 @@ class Agent(object):
             value_list = []
 
             s_t = time.time()
+            rnn_state = self.local_AC_network.state_init
 
             while not self.env.is_episode_finished():
                 sleep(0.05)
                 game_vars = self.env.get_state().game_variables
                 state = [s, game_vars[:-1]]
 
-                reward, v, end, a_index = self.step(state, sess)
+                reward, v, rnn_state, end, a_index = self.step(state, rnn_state, sess)
 
                 if step >= cfg.SKIP_FRAME_NUM:
                     reward_list.append(reward)
