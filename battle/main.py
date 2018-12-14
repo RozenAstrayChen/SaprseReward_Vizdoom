@@ -16,7 +16,7 @@ max_episode_length = 2100
 gamma = .99  # discount rate for advantage estimation and reward discounting
 s_size = 6400 # 80 * 80 * 1
 a_size = 3  # Agent can move Left, Right, or Fire
-load_model = False
+load_model = True
 
 
 def main_train(tf_configs=None):
