@@ -81,7 +81,7 @@ class Agent(object):
         game.set_episode_start_time(5)
         game.set_window_visible(self.play)
         game.set_sound_enabled(False)
-        game.set_living_reward(0)
+        game.set_living_reward(-0.25)
         game.set_mode(Mode.PLAYER)
         if self.play:
             game.add_game_args("+viz_render_all 1")
@@ -304,11 +304,12 @@ class Agent(object):
         })
         a_index = self.choose_action_index(a_dist[0], deterministic=False)
         if self.play:
-            self.env.make_action(self.actions[a_index])
+            #self.env.make_action(self.actions[a_index])
+            env_r = self.env.make_action(self.actions[a_index], cfg.SKIP_FRAME_NUM)
         else:
-            self.env.make_action(self.actions[a_index], cfg.SKIP_FRAME_NUM)
+            env_r = self.env.make_action(self.actions[a_index], cfg.SKIP_FRAME_NUM)
 
-        reward = self.reward_function()
+        reward = self.reward_function(env_r)
         end = self.env.is_episode_finished()
 
         return reward, value, end, a_index
@@ -327,7 +328,7 @@ class Agent(object):
 
         return len(policy) - 1
 
-    def reward_function(self):
+    def reward_function(self, env_reward):
         #kills_delta = self.env.get_game_variable(GameVariable.USER2) - self.last_total_kills
         #self.last_total_kills = self.env.get_game_variable(GameVariable.USER2)
         kills_delta = self.env.get_game_variable(GameVariable.KILLCOUNT) - self.last_total_kills
@@ -343,8 +344,8 @@ class Agent(object):
         reward = 0
         reward += kills_delta * 20.
 
-        if ammo_delta >= 0:
-            reward += ammo_delta * 0.5
+        #if ammo_delta >= 0:
+        reward += ammo_delta * 0.5
         # else:
         #     reward += ammo_delta * 0.1
 
@@ -353,10 +354,10 @@ class Agent(object):
         else:
             reward += health_delta * 0.1
 
-        if self.env.get_game_variable(GameVariable.HEALTH) <= 30:
-            reward += -1
+        #if self.env.get_game_variable(GameVariable.HEALTH) <= 30:
+        #    reward += -1
 
-        if self.env.get_game_variable(GameVariable.AMMO2) <= 5:
-            reward += -1
-
+        #if self.env.get_game_variable(GameVariable.AMMO2) <= 5:
+        #    reward += -1
+        reward += env_reward
         return reward

@@ -141,11 +141,11 @@ class Visualiser(object):
             self.screen.blit(self.attack, (460, 250))
         else:
             self.screen.blit(self.attack_back, (460, 250))
-
-        if actions[6]:
-            self.screen.blit(self.speed, (540, 250))
-        else:
-            self.screen.blit(self.speed_back, (540, 250))
+        if len(actions) > 6:
+            if actions[6]:
+                self.screen.blit(self.speed, (540, 250))
+            else:
+                self.screen.blit(self.speed_back, (540, 250))
 
         # dynamic rewards
         reward_info = self.font_reward.render('Reward: %s' % reward_list[-1], 1, self.text_color)
