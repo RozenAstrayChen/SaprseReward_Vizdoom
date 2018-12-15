@@ -9,7 +9,9 @@ model_file = 'model-1400.ckpt'
 #model_file = 'model-30150.ckpt'
 #model_file = 'model-41050.ckpt'
 
-SCENARIO_PATH = '../scenarios/D3_battle.cfg'
+#SCENARIO_PATH = '../scenarios/D3_battle.cfg'
+SCENARIO_PATH = '../scenarios/basic.cfg'
+
 
 IS_SUPREME_VERSION = True
 IS_TRAIN = True
@@ -49,7 +51,7 @@ def button_combinations():
 
 
 def button_combinations():
-    actions = np.identity(8, dtype=int).tolist()
+    actions = np.identity(6, dtype=int).tolist()
     return actions
 
 ACTION_DIM = len(button_combinations())

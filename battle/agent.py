@@ -303,10 +303,10 @@ class Agent(object):
         })
         a_index = self.choose_action_index(a_dist[0], deterministic=False)
         if self.play:
-            self.env.make_action(self.actions[a_index])
+            env_r = self.env.make_action(self.actions[a_index])
             
         else:
-            self.env.make_action(self.actions[a_index], cfg.SKIP_FRAME_NUM)
+            env_r = self.env.make_action(self.actions[a_index], cfg.SKIP_FRAME_NUM)
             
 
         reward = self.reward_function()
