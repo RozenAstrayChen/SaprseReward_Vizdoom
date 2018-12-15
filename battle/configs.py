@@ -5,7 +5,7 @@ IMG_SHAPE = (80, 80)
 a_size = 3
 model_path = './check_point/D3_battle/'
 #model_file = 'model-51000.ckpt'
-model_file = 'model-5000.ckpt'
+model_file = 'model-1400.ckpt'
 #model_file = 'model-30150.ckpt'
 #model_file = 'model-41050.ckpt'
 
@@ -13,6 +13,7 @@ SCENARIO_PATH = '../scenarios/D3_battle.cfg'
 
 IS_SUPREME_VERSION = True
 IS_TRAIN = True
+LOAD_MODEL = False
 AGENTS_NUM = 32
 
 HIST_LEN = 4
