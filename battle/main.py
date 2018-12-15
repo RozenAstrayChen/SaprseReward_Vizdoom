@@ -16,7 +16,7 @@ max_episode_length = 2100
 gamma = .99  # discount rate for advantage estimation and reward discounting
 s_size = 6400 # 80 * 80 * 1
 a_size = 3  # Agent can move Left, Right, or Fire
-load_model = True
+
 
 
 def main_train(tf_configs=None):
@@ -40,7 +40,7 @@ def main_train(tf_configs=None):
 
     with tf.Session(config=tf_configs) as sess:
         coord = tf.train.Coordinator()
-        if load_model:
+        if cfg.LOAD_MODEL:
             print('Loading Model...')
             ckpt = tf.train.get_checkpoint_state(cfg.model_path)
             saver.restore(sess, ckpt.model_checkpoint_path)

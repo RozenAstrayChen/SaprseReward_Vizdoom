@@ -186,10 +186,13 @@ class Agent(object):
 
                     if end is True:
                         self.episode_health.append(self.env.get_game_variable(GameVariable.HEALTH))
-                        self.episode_kills.append(self.env.get_game_variable(GameVariable.USER2))
+                        #self.episode_kills.append(self.env.get_game_variable(GameVariable.USER2))
+                        self.episode_kills.append(self.env.get_game_variable(GameVariable.KILLCOUNT))
                         print('{}, health: {}, kills: {}, episode #{}, reward: {}, steps:{}, time costs:{}'.format(
                             self.name, self.env.get_game_variable(GameVariable.HEALTH),
-                            self.env.get_game_variable(GameVariable.USER2), episode_count,
+                            # self.env.get_game_variable(GameVariable.USER2), 
+                            self.env.get_game_variable(GameVariable.KILLCOUNT), 
+                            episode_count,
                             episode_reward, episode_step_count, time.time()-episode_st))
                         break
 
@@ -300,9 +303,11 @@ class Agent(object):
         })
         a_index = self.choose_action_index(a_dist[0], deterministic=False)
         if self.play:
-            self.env.make_action(self.actions[a_index])
+            env_r = self.env.make_action(self.actions[a_index])
+            
         else:
-            self.env.make_action(self.actions[a_index], cfg.SKIP_FRAME_NUM)
+            env_r = self.env.make_action(self.actions[a_index], cfg.SKIP_FRAME_NUM)
+            
 
         reward = self.reward_function()
         end = self.env.is_episode_finished()
@@ -324,8 +329,10 @@ class Agent(object):
         return len(policy) - 1
 
     def reward_function(self):
-        kills_delta = self.env.get_game_variable(GameVariable.USER2) - self.last_total_kills
-        self.last_total_kills = self.env.get_game_variable(GameVariable.USER2)
+        #kills_delta = self.env.get_game_variable(GameVariable.USER2) - self.last_total_kills
+        #self.last_total_kills = self.env.get_game_variable(GameVariable.USER2)
+        kills_delta = self.env.get_game_variable(GameVariable.KILLCOUNT) - self.last_total_kills
+        self.last_total_kills = self.env.get_game_variable(GameVariable.KILLCOUNT)
 
         ammo_delta = self.env.get_game_variable(GameVariable.AMMO2) - self.last_total_ammos
         self.last_total_ammos = self.env.get_game_variable(GameVariable.AMMO2)

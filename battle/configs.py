@@ -5,14 +5,17 @@ IMG_SHAPE = (80, 80)
 a_size = 3
 model_path = './check_point/D3_battle/'
 #model_file = 'model-51000.ckpt'
-model_file = 'model-5000.ckpt'
+model_file = 'model-1400.ckpt'
 #model_file = 'model-30150.ckpt'
 #model_file = 'model-41050.ckpt'
 
-SCENARIO_PATH = '../scenarios/D3_battle.cfg'
+#SCENARIO_PATH = '../scenarios/D3_battle.cfg'
+SCENARIO_PATH = '../scenarios/basic.cfg'
+
 
 IS_SUPREME_VERSION = True
 IS_TRAIN = True
+LOAD_MODEL = False
 AGENTS_NUM = 32
 
 HIST_LEN = 4
@@ -48,7 +51,7 @@ def button_combinations():
 
 
 def button_combinations():
-    actions = np.identity(8, dtype=int).tolist()
+    actions = np.identity(6, dtype=int).tolist()
     return actions
 
 ACTION_DIM = len(button_combinations())
