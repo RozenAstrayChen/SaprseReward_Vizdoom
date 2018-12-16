@@ -3,7 +3,7 @@ import numpy as np
 
 IMG_SHAPE = (80, 80)
 a_size = 3
-model_path = './check_point/my_way_home/'
+model_path = './check_point/my_way_home_rnn/'
 #model_file = 'model-51000.ckpt'
 model_file = 'model-800.ckpt'
 #model_file = 'model-30150.ckpt'
@@ -14,7 +14,7 @@ MAP = "map01"
 IS_SUPREME_VERSION = True
 IS_TRAIN = True
 LOAD_MODEL = False
-AGENTS_NUM = 32
+AGENTS_NUM = 1
 #AGENTS_NUM = 1
 # 32
 HIST_LEN = 4

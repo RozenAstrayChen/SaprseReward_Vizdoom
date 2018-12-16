@@ -28,14 +28,14 @@ def main_train(tf_configs=None):
         os.makedirs(cfg.model_path)
 
     global_episodes = tf.Variable(0, dtype=tf.int32, name='global_episodes', trainable=False)
-    with tf.device("/gpu:0"):
-        optimizer = tf.train.RMSPropOptimizer(learning_rate=1e-5)
-        global_network = network.ACNetwork('global', optimizer, img_shape=cfg.IMG_SHAPE)
-        num_workers = cfg.AGENTS_NUM
-        agents = []
-        # Create worker classes
-        for i in range(num_workers):
-            agents.append(agent.Agent(DoomGame(), i, optimizer, cfg.model_path, global_episodes, task_name='basic'))
+    #with tf.device("/gpu:0"):
+    optimizer = tf.train.RMSPropOptimizer(learning_rate=1e-5)
+    global_network = network.ACNetwork('global', optimizer, img_shape=cfg.IMG_SHAPE)
+    num_workers = cfg.AGENTS_NUM
+    agents = []
+    # Create worker classes
+    for i in range(num_workers):
+        agents.append(agent.Agent(DoomGame(), i, optimizer, cfg.model_path, global_episodes, task_name='my_way_home_rnn'))
     saver = tf.train.Saver(max_to_keep=100)
 
     with tf.Session(config=tf_configs) as sess:
