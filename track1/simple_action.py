@@ -27,11 +27,12 @@ game.set_render_particles(True)
 # Enables labeling of the in game objects.
 game.set_labels_buffer_enabled(True)
 game.add_available_button(Button.MOVE_FORWARD)
+#game.add_available_button(Button.MOVE_BACKWARD)
 game.add_available_button(Button.MOVE_RIGHT)
 game.add_available_button(Button.MOVE_LEFT)
 game.add_available_button(Button.TURN_LEFT)
 game.add_available_button(Button.TURN_RIGHT)
-game.add_available_button(Button.ATTACK)
+#game.add_available_button(Button.ATTACK)
 #game.add_available_button(Button.SPEED)
 game.add_available_game_variable(GameVariable.AMMO2)
 game.add_available_game_variable(GameVariable.HEALTH)
@@ -47,8 +48,8 @@ game.init()
 a_num = game.get_available_buttons_size()
 action_dim = np.identity(a_num, dtype=int).tolist()
 game_vars = game.get_state().game_variables[:-1]
-print(game_vars)
-print(a_num)
+print('game_vars', game_vars)
+print('action num', a_num)
 # 5
 
 def act(a):

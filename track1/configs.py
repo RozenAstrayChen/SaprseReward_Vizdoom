@@ -5,14 +5,14 @@ IMG_SHAPE = (80, 80)
 a_size = 3
 model_path = './check_point/my_way_home/'
 #model_file = 'model-51000.ckpt'
-model_file = 'model-400.ckpt'
+model_file = 'model-800.ckpt'
 #model_file = 'model-30150.ckpt'
 #model_file = 'model-41050.ckpt'
 
-SCENARIO_PATH = '../scenarios/basic.cfg'
-
+SCENARIO_PATH = '../scenarios/my_way_home.cfg'
+MAP = "map01"
 IS_SUPREME_VERSION = True
-IS_TRAIN = False
+IS_TRAIN = True
 LOAD_MODEL = False
 AGENTS_NUM = 32
 #AGENTS_NUM = 1
@@ -50,7 +50,7 @@ def button_combinations():
 
 
 def button_combinations():
-    actions = np.identity(6, dtype=int).tolist()
+    actions = np.identity(5, dtype=int).tolist()
     return actions
 
 

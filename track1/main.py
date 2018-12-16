@@ -35,7 +35,7 @@ def main_train(tf_configs=None):
         agents = []
         # Create worker classes
         for i in range(num_workers):
-            agents.append(agent.Agent(DoomGame(), i, optimizer, cfg.model_path, global_episodes, task_name='my_way_home'))
+            agents.append(agent.Agent(DoomGame(), i, optimizer, cfg.model_path, global_episodes, task_name='basic'))
     saver = tf.train.Saver(max_to_keep=100)
 
     with tf.Session(config=tf_configs) as sess:
