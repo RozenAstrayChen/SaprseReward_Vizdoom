@@ -292,15 +292,16 @@ class Agent(object):
         if not isinstance(sess, tf.Session):
             raise TypeError('saver should be tf.train.Saver')
 
-        self.visualizer.init()
-
+        #self.visualizer.init()
+        rnn_state = self.local_AC_network.state_init
         for i in range(episode_num):
 
             self.env.new_episode()
 
-            st_s = utils.process_frame(self.env.get_state().screen_buffer,
-                                       self.img_shape)
-            s = np.stack((st_s, st_s, st_s, st_s), axis=2)
+            s = np.reshape(
+                utils.process_frame(self.env.get_state().screen_buffer,
+                                    self.img_shape), (*self.img_shape, 1))
+
             episode_rewards = 0
             step = 0
 
@@ -311,23 +312,23 @@ class Agent(object):
 
             while not self.env.is_episode_finished():
                 sleep(0.05)
-                state = [s]
+                
 
-                reward, v, end, a_index = self.step(state, sess)
+                reward, v, end, a_index, rnn_state = self.step(s, rnn_state, sess)
 
                 if step >= cfg.SKIP_FRAME_NUM:
                     reward_list.append(reward)
                     value_list.append(v[0, 0])
+                    '''
                     self.visualizer.visualize(s, [0, 0], self.actions[a_index],
                                               reward_list, value_list)
-
+                    '''
                 if end:
                     break
 
-                img = np.reshape(
+                s = np.reshape(
                     utils.process_frame(self.env.get_state().screen_buffer,
                                         self.img_shape), (*self.img_shape, 1))
-                s = np.append(img, s[:, :, :3], axis=2)
 
                 step += 1
 
@@ -362,8 +363,7 @@ class Agent(object):
         a_index = self.choose_action_index(a_dist[0], deterministic=False)
         if self.play:
             #self.env.make_action(self.actions[a_index])
-            reward = self.env.make_action(self.actions[a_index],
-                                          cfg.SKIP_FRAME_NUM)
+            reward = self.env.make_action(self.actions[a_index])
         else:
             reward = self.env.make_action(self.actions[a_index],
                                           cfg.SKIP_FRAME_NUM)
