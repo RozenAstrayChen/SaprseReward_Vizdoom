@@ -2,15 +2,15 @@ import numpy as np
 # coding: utf-8
 
 IMG_SHAPE = (80, 80)
-a_size = 6
+a_size = 4
 model_path = './check_point/D3_battle/'
 #model_file = 'model-51000.ckpt'
 model_file = 'model-1400.ckpt'
 #model_file = 'model-30150.ckpt'
 #model_file = 'model-41050.ckpt'
 
-#SCENARIO_PATH = '../scenarios/D3_battle.cfg'
-SCENARIO_PATH = '../scenarios/basic.cfg'
+SCENARIO_PATH = '../scenarios/D3_battle.cfg'
+#SCENARIO_PATH = '../scenarios/basic.cfg'
 
 
 IS_SUPREME_VERSION = True
