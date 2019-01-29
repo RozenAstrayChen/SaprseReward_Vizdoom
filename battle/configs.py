@@ -2,7 +2,7 @@ import numpy as np
 # coding: utf-8
 
 IMG_SHAPE = (80, 80)
-a_size = 3
+a_size = 6
 model_path = './check_point/D3_battle/'
 #model_file = 'model-51000.ckpt'
 model_file = 'model-1400.ckpt'
@@ -51,7 +51,7 @@ def button_combinations():
 
 
 def button_combinations():
-    actions = np.identity(6, dtype=int).tolist()
+    actions = np.identity(a_size, dtype=int).tolist()
     return actions
 
 ACTION_DIM = len(button_combinations())
