@@ -25,7 +25,7 @@ class Agent(object):
         self.play = play
         self.summary_step = 3
 
-        self.visualizer = utils.Visualiser()
+        #self.visualizer = utils.Visualiser()
 
         self.name = cfg.AGENT_PREFIX + str(name)
         self.number = name
@@ -245,7 +245,7 @@ class Agent(object):
         if not isinstance(sess, tf.Session):
             raise TypeError('saver should be tf.train.Saver')
 
-        self.visualizer.init()
+        #self.visualizer.init()
 
         for i in range(episode_num):
 
@@ -262,7 +262,6 @@ class Agent(object):
             s_t = time.time()
 
             while not self.env.is_episode_finished():
-                sleep(0.05)
                 game_vars = self.env.get_state().game_variables
                 state = [s, game_vars[:-1]]
 
@@ -271,7 +270,7 @@ class Agent(object):
                 if step >= cfg.SKIP_FRAME_NUM:
                     reward_list.append(reward)
                     value_list.append(v[0, 0])
-                    self.visualizer.visualize(s, game_vars, self.actions[a_index], reward_list, value_list)
+                    #self.visualizer.visualize(s, game_vars, self.actions[a_index], reward_list, value_list)
 
                 if end:
                     break
@@ -288,7 +287,7 @@ class Agent(object):
                 print('Current action: ', self.actions[a_index])
                 print('Current game variables: ', self.env.get_state().game_variables)
                 print('Current reward: {0}'.format(reward))
-                time.sleep(0.05)
+                time.sleep(0.01)
             print('End episode: {}, Total Reward: {}'.format(i, episode_rewards))
             print('time costs: {}'.format(time.time() - s_t))
             time.sleep(5)
