@@ -7,9 +7,9 @@ from abc import abstractmethod
 from collections import deque
 from copy import copy
 
-import gym_super_mario_bros
+#import gym_super_mario_bros
 from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
-from gym_super_mario_bros.actions import SIMPLE_MOVEMENT, COMPLEX_MOVEMENT
+#from gym_super_mario_bros.actions import SIMPLE_MOVEMENT, COMPLEX_MOVEMENT
 
 from torch.multiprocessing import Pipe, Process
 
@@ -207,7 +207,7 @@ class AtariEnvironment(Environment):
         for i in range(self.history_size):
             self.history[i, :, :] = self.pre_proc(s)
 
-
+'''
 class MarioEnvironment(Process):
     def __init__(
             self,
@@ -323,3 +323,4 @@ class MarioEnvironment(Process):
     def get_init_state(self, s):
         for i in range(self.history_size):
             self.history[i, :, :] = self.pre_proc(s)
+'''
