@@ -3,6 +3,7 @@ from envs import *
 from utils import *
 from config import *
 from torch.multiprocessing import Pipe
+
 from tensorboardX import SummaryWriter
 
 import numpy as np
@@ -15,8 +16,7 @@ def main():
     env_type = default_config['EnvType']
 
     if env_type == 'mario':
-        env = BinarySpaceToDiscreteSpaceEnv(
-            gym_super_mario_bros.make(env_id), COMPLEX_MOVEMENT)
+        env = BinarySpaceToDiscreteSpaceEnv(gym_super_mario_bros.make(env_id), COMPLEX_MOVEMENT)
     elif env_type == 'atari':
         env = gym.make(env_id)
     else:
@@ -91,28 +91,22 @@ def main():
         ppo_eps=ppo_eps,
         use_cuda=use_cuda,
         use_gae=use_gae,
-        use_noisy_net=use_noisy_net)
+        use_noisy_net=use_noisy_net
+    )
 
     if is_load_model:
         if use_cuda:
             agent.model.load_state_dict(torch.load(model_path))
         else:
-            agent.model.load_state_dict(
-                torch.load(model_path, map_location='cpu'))
+            agent.model.load_state_dict(torch.load(model_path, map_location='cpu'))
 
     works = []
     parent_conns = []
     child_conns = []
     for idx in range(num_worker):
         parent_conn, child_conn = Pipe()
-        work = env_type(
-            env_id,
-            is_render,
-            idx,
-            child_conn,
-            sticky_action=sticky_action,
-            p=action_prob,
-            life_done=life_done)
+        work = env_type(env_id, is_render, idx, child_conn, sticky_action=sticky_action, p=action_prob,
+                        life_done=life_done)
         work.start()
         works.append(work)
         parent_conns.append(parent_conn)
@@ -132,7 +126,7 @@ def main():
     print('Start to initailize observation normalization parameter.....')
     next_obs = []
     for step in range(num_step * pre_obs_norm_step):
-        actions = np.random.randint(0, output_size, size=(num_worker, ))
+        actions = np.random.randint(0, output_size, size=(num_worker,))
 
         for parent_conn, action in zip(parent_conns, actions):
             parent_conn.send(action)
@@ -155,8 +149,7 @@ def main():
 
         # Step 1. n-step rollout
         for _ in range(num_step):
-            actions, value_ext, value_int, policy = agent.get_action(
-                np.float32(states) / 255.)
+            actions, value_ext, value_int, policy = agent.get_action(np.float32(states) / 255.)
 
             for parent_conn, action in zip(parent_conns, actions):
                 parent_conn.send(action)
@@ -201,29 +194,24 @@ def main():
             sample_step += 1
             if real_dones[sample_env_idx]:
                 sample_episode += 1
-                writer.add_scalar('data/reward_per_epi', sample_rall,
-                                  sample_episode)
-                writer.add_scalar('data/reward_per_rollout', sample_rall,
-                                  global_update)
+                writer.add_scalar('data/reward_per_epi', sample_rall, sample_episode)
+                writer.add_scalar('data/reward_per_rollout', sample_rall, global_update)
                 writer.add_scalar('data/step', sample_step, sample_episode)
                 sample_rall = 0
                 sample_step = 0
                 sample_i_rall = 0
 
         # calculate last next value
-        _, value_ext, value_int, _ = agent.get_action(
-            np.float32(states) / 255.)
+        _, value_ext, value_int, _ = agent.get_action(np.float32(states) / 255.)
         total_ext_values.append(value_ext)
         total_int_values.append(value_int)
         # --------------------------------------------------
 
-        total_state = np.stack(total_state).transpose([1, 0, 2, 3, 4]).reshape(
-            [-1, 4, 84, 84])
+        total_state = np.stack(total_state).transpose([1, 0, 2, 3, 4]).reshape([-1, 4, 84, 84])
         total_reward = np.stack(total_reward).transpose().clip(-1, 1)
         total_action = np.stack(total_action).transpose().reshape([-1])
         total_done = np.stack(total_done).transpose()
-        total_next_obs = np.stack(total_next_obs).transpose(
-            [1, 0, 2, 3, 4]).reshape([-1, 1, 84, 84])
+        total_next_obs = np.stack(total_next_obs).transpose([1, 0, 2, 3, 4]).reshape([-1, 1, 84, 84])
         total_ext_values = np.stack(total_ext_values).transpose()
         total_int_values = np.stack(total_int_values).transpose()
         total_logging_policy = np.vstack(total_policy_np)
@@ -231,40 +219,37 @@ def main():
         # Step 2. calculate intrinsic reward
         # running mean intrinsic reward
         total_int_reward = np.stack(total_int_reward).transpose()
-        total_reward_per_env = np.array([
-            discounted_reward.update(reward_per_step)
-            for reward_per_step in total_int_reward.T
-        ])
-        mean, std, count = np.mean(total_reward_per_env), np.std(
-            total_reward_per_env), len(total_reward_per_env)
-        reward_rms.update_from_moments(mean, std**2, count)
+        total_reward_per_env = np.array([discounted_reward.update(reward_per_step) for reward_per_step in
+                                         total_int_reward.T])
+        mean, std, count = np.mean(total_reward_per_env), np.std(total_reward_per_env), len(total_reward_per_env)
+        reward_rms.update_from_moments(mean, std ** 2, count)
 
         # normalize intrinsic reward
         total_int_reward /= np.sqrt(reward_rms.var)
-        writer.add_scalar('data/int_reward_per_epi',
-                          np.sum(total_int_reward) / num_worker,
-                          sample_episode)
-        writer.add_scalar('data/int_reward_per_rollout',
-                          np.sum(total_int_reward) / num_worker, global_update)
+        writer.add_scalar('data/int_reward_per_epi', np.sum(total_int_reward) / num_worker, sample_episode)
+        writer.add_scalar('data/int_reward_per_rollout', np.sum(total_int_reward) / num_worker, global_update)
         # -------------------------------------------------------------------------------------------
 
         # logging Max action probability
-        writer.add_scalar('data/max_prob',
-                          softmax(total_logging_policy).max(1).mean(),
-                          sample_episode)
+        writer.add_scalar('data/max_prob', softmax(total_logging_policy).max(1).mean(), sample_episode)
 
         # Step 3. make target and advantage
         # extrinsic reward calculate
-        ext_target, ext_adv = make_train_data(total_reward, total_done,
-                                              total_ext_values, gamma,
-                                              num_step, num_worker)
+        ext_target, ext_adv = make_train_data(total_reward,
+                                              total_done,
+                                              total_ext_values,
+                                              gamma,
+                                              num_step,
+                                              num_worker)
 
         # intrinsic reward calculate
         # None Episodic
         int_target, int_adv = make_train_data(total_int_reward,
                                               np.zeros_like(total_int_reward),
-                                              total_int_values, int_gamma,
-                                              num_step, num_worker)
+                                              total_int_values,
+                                              int_gamma,
+                                              num_step,
+                                              num_worker)
 
         # add ext adv and int adv
         total_adv = int_adv * int_coef + ext_adv * ext_coef
@@ -275,11 +260,9 @@ def main():
         # -----------------------------------------------
 
         # Step 5. Training!
-        agent.train_model(
-            np.float32(total_state) / 255., ext_target, int_target,
-            total_action, total_adv,
-            ((total_next_obs - obs_rms.mean) / np.sqrt(obs_rms.var)).clip(
-                -5, 5), total_policy)
+        agent.train_model(np.float32(total_state) / 255., ext_target, int_target, total_action,
+                          total_adv, ((total_next_obs - obs_rms.mean) / np.sqrt(obs_rms.var)).clip(-5, 5),
+                          total_policy)
 
         if global_step % (num_worker * num_step * 100) == 0:
             print('Now Global Step :{}'.format(global_step))
