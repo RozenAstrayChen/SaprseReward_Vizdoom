@@ -90,7 +90,7 @@ class RNDAgent(object):
         adv_batch = torch.FloatTensor(adv_batch).to(self.device)
         next_obs_batch = torch.FloatTensor(next_obs_batch).to(self.device)
 
-        sample_range = np.arrange(len(s_batch))
+        sample_range = np.arange(len(s_batch))
         forward_mse = nn.MSELoss(reduction='none')
 
         with torch.no_grad():
