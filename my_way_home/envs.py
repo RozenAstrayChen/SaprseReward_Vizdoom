@@ -161,7 +161,6 @@ class DoomEnvironment(Environment):
 
     def run(self):
         while True:
-            print('star work')
             action = self.child_conn.recv()
             #TODO work on render
             # sticky action
