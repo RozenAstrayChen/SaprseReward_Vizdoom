@@ -160,8 +160,10 @@ class DoomEnvironment(Environment):
         return actions
 
     def run(self):
+        print(star)
+        super(DoomEnvironment, self).run()
         while True:
-            print('star work')
+            
             action = self.child_conn.recv()
             #TODO work on render
             # sticky action
