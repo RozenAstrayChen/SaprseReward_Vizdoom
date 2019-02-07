@@ -174,13 +174,13 @@ class DoomEnvironment(Process):
             done = self.env.is_episode_finished()
             
             if not done:
-                obs = self.env.get_state().screen_buffer
+                s = self.env.get_state().screen_buffer
             
             log_reward = reward
             force_done = done
 
             self.history[:3, :, :] = self.history[1:, :, :]
-            self.history[3, :, :] = self.pre_proc(obs)
+            self.history[3, :, :] = self.pre_proc(s)
 
             self.rall += reward
             self.steps +=1
@@ -206,13 +206,14 @@ class DoomEnvironment(Process):
         self.episode += 1
         self.rall = 0
         self.env.new_episode()
-        self.get_init_state(self.pre_proc(self.env.get_state().screen_buffer))
+        s = self.env.get_state().screen_buffer
+        self.get_init_state(self.pre_proc(s))
         return self.history[:, :, :]
         
 
     def pre_proc(self, X):
         x = cv2.cvtColor(X, cv2.COLOR_RGB2GRAY)
-        x = cv2.resize(x, (self.h, self.w))
+        x = cv2.resize(X, (self.h, self.w))
 
         return x
     
