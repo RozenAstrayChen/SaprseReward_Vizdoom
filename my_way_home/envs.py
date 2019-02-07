@@ -177,21 +177,13 @@ class DoomEnvironment(Process):
             if not done:
                 obs = self.env.get_state().screen_buffer
             
-            # when done state to the terminal
-            if done:
-                force_done = True
-            else:
-                force_done = done
-            
-            # reward 
             log_reward = reward
-            self.rall += log_reward
-
-            r = log_reward
+            force_done = done
 
             self.history[:3, :, :] = self.history[1:, :, :]
             self.history[3, :, :] = self.pre_proc(obs)
 
+            self.rall += reward
             self.steps +=1
 
             if done:
