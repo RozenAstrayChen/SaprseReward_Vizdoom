@@ -83,6 +83,7 @@ def main():
     elif default_config['EnvType'] == 'mario':
         env_type = MarioEnvironment
     elif default_config['EnvType'] == 'vizdoom':
+        print('Doom Environment')
         env_type = DoomEnvironment
     else:
         raise NotImplementedError
@@ -114,7 +115,9 @@ def main():
     works = []
     parent_conns = []
     child_conns = []
+    print('init workers')
     for idx in range(num_worker):
+        #print('work ', idx)
         parent_conn, child_conn = Pipe()
         work = env_type(env_id, is_render, idx, child_conn, sticky_action=sticky_action, p=action_prob,
                         life_done=life_done)
@@ -122,7 +125,7 @@ def main():
         works.append(work)
         parent_conns.append(parent_conn)
         child_conns.append(child_conn)
-
+    print('init work dones')
     states = np.zeros([num_worker, 4, 84, 84])
 
     sample_episode = 0

@@ -124,7 +124,7 @@ class DoomEnvironment(Process):
     
     def init_game(self):
         game = DoomGame()
-        game.load_config('./check_point/D3_battle/')
+        game.load_config('../scenarios/my_way_home.cfg')
         game.set_doom_map('map01')
         game.set_screen_resolution(ScreenResolution.RES_640X480)
         game.set_screen_format(ScreenFormat.RGB24)
@@ -160,7 +160,6 @@ class DoomEnvironment(Process):
         return actions
 
     def run(self):
-        print('start')
         super(DoomEnvironment, self).run()
         while True:
 
@@ -172,9 +171,11 @@ class DoomEnvironment(Process):
                     action = self.last_action
                 self.last_action = action
             
-            reward = self.env.make_action(action, 4)
-            obs = self.env.get_state().screen_buffer
+            reward = self.env.make_action(self.actions[action], 4)
             done = self.env.is_episode_finished()
+            
+            if not done:
+                obs = self.env.get_state().screen_buffer
             
             # when done state to the terminal
             if done:
@@ -196,16 +197,12 @@ class DoomEnvironment(Process):
             if done:
                 self.recent_rlist.append(self.rall)
                 print(
-                    "[Episode {}({})] Step: {}  Reward: {}  Recent Reward: {}  Stage: {} current x:{}   max x:{}".format(
+                    "[Episode {}({})] Step: {}  Reward: {}  Recent Reward: {}".format(
                         self.episode,
                         self.env_idx,
                         self.steps,
                         self.rall,
-                        np.mean(
-                            self.recent_rlist),
-                        info['stage'],
-                        info['x_pos'],
-                        self.max_pos))
+                        np.mean(self.recent_rlist)))
 
                 self.history = self.reset()
 
@@ -219,7 +216,8 @@ class DoomEnvironment(Process):
         self.rall = 0
         self.stage = 1
         self.max_pos = 0
-        self.get_init_state(self.env.reset())
+        self.env.new_episode()
+        self.get_init_state(self.env.get_state().screen_buffer)
         return self.history[:, :, :]
         
 
