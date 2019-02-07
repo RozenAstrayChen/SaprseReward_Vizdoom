@@ -24,6 +24,7 @@ def main():
     elif env_type == 'vizdoom':
         input_size = (84, 84)
         output_size = 3
+        print('vizdoom init')
     else:
         raise NotImplementedError
     

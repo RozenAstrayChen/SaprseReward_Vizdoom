@@ -85,7 +85,7 @@ class MaxAndSkipEnv(gym.Wrapper):
         return self.env.reset(**kwargs)
 
 
-class DoomEnvironment(Environment):
+class DoomEnvironment(Process):
     def __init__(self,
                  env_id,
                  is_render,
@@ -160,7 +160,10 @@ class DoomEnvironment(Environment):
         return actions
 
     def run(self):
+        print('start')
+        super(DoomEnvironment, self).run()
         while True:
+
             action = self.child_conn.recv()
             #TODO work on render
             # sticky action
