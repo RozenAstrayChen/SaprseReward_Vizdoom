@@ -12,22 +12,30 @@ import numpy as np
 def main():
     print({section: dict(config[section]) for section in config.sections()})
     train_method = default_config['TrainMethod']
+    # atari
     env_id = default_config['EnvID']
+    # MontezumaRevengeNoFrameskip-v4
     env_type = default_config['EnvType']
 
     if env_type == 'mario':
         env = BinarySpaceToDiscreteSpaceEnv(gym_super_mario_bros.make(env_id), COMPLEX_MOVEMENT)
     elif env_type == 'atari':
         env = gym.make(env_id)
+    elif env_type == 'vizdoom':
+        input_size = (84, 84)
+        output_size = 3
     else:
         raise NotImplementedError
-    input_size = env.observation_space.shape  # 4
-    output_size = env.action_space.n  # 2
+    
+    if env_type == 'mario' or env_type == 'atari':
+        input_size = env.observation_space.shape  # 4
+        output_size = env.action_space.n  # 2
 
-    if 'Breakout' in env_id:
-        output_size -= 1
+        if 'Breakout' in env_id:
+            output_size -= 1
 
-    env.close()
+        env.close()
+        
 
     is_load_model = False
     is_render = False
@@ -73,6 +81,8 @@ def main():
         env_type = AtariEnvironment
     elif default_config['EnvType'] == 'mario':
         env_type = MarioEnvironment
+    elif default_config['EnvType'] == 'vizdoom':
+        env_type = DoomEnvironment
     else:
         raise NotImplementedError
 
