@@ -92,10 +92,9 @@ class DoomEnvironment(Environment):
                  env_idx,
                  child_conn,
                  history_size=4,
-                 lift_done=True,
+                 life_done=True,
                  h=84,
                  w=84,
-                 movement=COMPLEX_MOVEMENT,
                  sticky_action=True,
                  p=0.25):
         super(DoomEnvironment, self).__init__()
@@ -162,6 +161,7 @@ class DoomEnvironment(Environment):
 
     def run(self):
         while True:
+            print('star work')
             action = self.child_conn.recv()
             #TODO work on render
             # sticky action
