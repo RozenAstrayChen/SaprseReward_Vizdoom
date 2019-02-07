@@ -162,7 +162,6 @@ class DoomEnvironment(Process):
     def run(self):
         super(DoomEnvironment, self).run()
         while True:
-
             action = self.child_conn.recv()
             #TODO work on render
             # sticky action
@@ -198,7 +197,7 @@ class DoomEnvironment(Process):
 
                 self.history = self.reset()
 
-            self.child_conn.send([self.history[:, :, :], r, force_done, done, log_reward])
+            self.child_conn.send([self.history[:, :, :], reward, force_done, done, log_reward])
 
     def reset(self):
         self.env.new_episode()
@@ -206,17 +205,13 @@ class DoomEnvironment(Process):
         self.steps = 0
         self.episode += 1
         self.rall = 0
-        self.stage = 1
-        self.max_pos = 0
         self.env.new_episode()
-        self.get_init_state(self.env.get_state().screen_buffer)
+        self.get_init_state(self.pre_proc(self.env.get_state().screen_buffer))
         return self.history[:, :, :]
         
 
     def pre_proc(self, X):
-        # grayscaling
         x = cv2.cvtColor(X, cv2.COLOR_RGB2GRAY)
-        # resize
         x = cv2.resize(x, (self.h, self.w))
 
         return x
