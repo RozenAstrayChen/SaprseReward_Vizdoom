@@ -173,15 +173,16 @@ class DoomEnvironment(Process):
             
             reward = self.env.make_action(self.actions[action], 4)
             done = self.env.is_episode_finished()
-            
+
             if not done:
                 s = self.env.get_state().screen_buffer
             
             log_reward = reward
             force_done = done
-
             self.history[:3, :, :] = self.history[1:, :, :]
-            self.history[3, :, :] = self.pre_proc(s)
+            s = self.pre_proc(s)
+            
+            self.history[3, :, :] = s
 
             self.rall += reward
             self.steps +=1
@@ -197,7 +198,6 @@ class DoomEnvironment(Process):
                         np.mean(self.recent_rlist)))
 
                 self.history = self.reset()
-
             self.child_conn.send([self.history[:, :, :], reward, force_done, done, log_reward])
 
     def reset(self):
@@ -215,10 +215,10 @@ class DoomEnvironment(Process):
     def pre_proc(self, X):
         #x = cv2.cvtColor(X, cv2.COLOR_RGB2GRAY)
         #x = cv2.resize(x, (self.h, self.w))
-        #x = cv2.resize(X, (self.h, self.w), interpolation=cv2.INTER_LINEAR)
-        #x = np.dot(x[..., :3], [0.299, 0.587, 0.114])
-        X = np.array(Image.fromarray(X).convert('L')).astype('float32')
-        x = cv2.resize(X, (self.h, self.w))
+        x = cv2.resize(X, (self.h, self.w), interpolation=cv2.INTER_LINEAR)
+        x = np.dot(x[..., :3], [0.299, 0.587, 0.114])
+        #X = np.array(Image.fromarray(X).convert('L')).astype('float32')
+        #x = cv2.resize(X, (self.h, self.w))
         return x
     
     def get_init_state(self, s):

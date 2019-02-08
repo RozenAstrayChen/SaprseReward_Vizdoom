@@ -19,15 +19,21 @@ def main():
         env = BinarySpaceToDiscreteSpaceEnv(gym_super_mario_bros.make(env_id), COMPLEX_MOVEMENT)
     elif env_type == 'atari':
         env = gym.make(env_id)
+    elif env_type == 'vizdoom':
+        input_size = (84, 84)
+        output_size = 3
+        print('vizdoom init')
     else:
         raise NotImplementedError
-    input_size = env.observation_space.shape  # 4
-    output_size = env.action_space.n  # 2
 
-    if 'Breakout' in env_id:
-        output_size -= 1
+    if env_type == 'mario' or env_type == 'atari':
+        input_size = env.observation_space.shape  # 4
+        output_size = env.action_space.n  # 2
 
-    env.close()
+        if 'Breakout' in env_id:
+            output_size -= 1
+
+        env.close()
 
     is_render = True
     model_path = 'models/{}.model'.format(env_id)
@@ -62,6 +68,9 @@ def main():
         env_type = AtariEnvironment
     elif default_config['EnvType'] == 'mario':
         env_type = MarioEnvironment
+    elif default_config['EnvType'] == 'vizdoom':
+        print('Doom Environment')
+        env_type = DoomEnvironment
     else:
         raise NotImplementedError
 
@@ -85,10 +94,12 @@ def main():
 
     print('Loading Pre-trained model....')
     if use_cuda:
+        print('using cuda')
         agent.model.load_state_dict(torch.load(model_path))
         agent.rnd.predictor.load_state_dict(torch.load(predictor_path))
         agent.rnd.target.load_state_dict(torch.load(target_path))
     else:
+        print('not using cuda')
         agent.model.load_state_dict(torch.load(model_path, map_location='cpu'))
         agent.rnd.predictor.load_state_dict(torch.load(predictor_path, map_location='cpu'))
         agent.rnd.target.load_state_dict(torch.load(target_path, map_location='cpu'))
@@ -107,7 +118,7 @@ def main():
         child_conns.append(child_conn)
 
     states = np.zeros([num_worker, 4, 84, 84])
-
+    print('start enjoy!')
     steps = 0
     rall = 0
     rd = False
