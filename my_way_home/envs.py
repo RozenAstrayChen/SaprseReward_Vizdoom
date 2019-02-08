@@ -125,7 +125,7 @@ class DoomEnvironment(Process):
     
     def init_game(self):
         game = DoomGame()
-        game.load_config(self.env_id)
+        game.load_config('../scenarios/my_way_home.cfg')
         game.set_doom_map('map01')
         game.set_screen_resolution(ScreenResolution.RES_640X480)
         game.set_screen_format(ScreenFormat.RGB24)
