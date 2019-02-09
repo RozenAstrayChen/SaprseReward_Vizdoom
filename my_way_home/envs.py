@@ -185,8 +185,8 @@ class DoomEnvironment(Process):
 
     def run(self):
         super(DoomEnvironment, self).run()
+        self.init_variables()
         while True:
-            self.init_variables()
             action = self.child_conn.recv()
             #TODO work on render
             # sticky action
