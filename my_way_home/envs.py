@@ -132,14 +132,14 @@ class DoomEnvironment(Process):
     
     def init_game(self):
         game = DoomGame()
-        if self.env_id is 'my_way_home':
+        if self.env_id == "my_way_home":
             game.load_config('../scenarios/my_way_home.cfg')
             game.clear_available_buttons()
             game.add_available_button(Button.MOVE_FORWARD)
             game.add_available_button(Button.TURN_LEFT)
             game.add_available_button(Button.TURN_RIGHT)
 
-        elif self.env_id is 'battle':
+        elif self.env_id == "battle":
             game.load_config('../scenarios/D3_battle.cfg')
             game.clear_available_buttons()
             game.add_available_button(Button.MOVE_FORWARD)
@@ -187,6 +187,7 @@ class DoomEnvironment(Process):
         super(DoomEnvironment, self).run()
         #self.init_variables()
         while True:
+            #print(self.env.get_game_variable(GameVariable.HEALTH))
             action = self.child_conn.recv()
             #TODO work on render
             # sticky action
@@ -195,8 +196,8 @@ class DoomEnvironment(Process):
                     action = self.last_action
                 self.last_action = action
                 
-            self.get_variables()
             reward = self.env.make_action(self.actions[action], 4)
+            self.get_variables()
             done = self.env.is_episode_finished()
 
             if not done:
