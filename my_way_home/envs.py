@@ -118,13 +118,14 @@ class DoomEnvironment(Process):
         self.img_shape = (h, w)
         self.h = h
         self.w = w
-        if self.env_id is 'my_way_home':
-            print('scenarios is my way home')
-            self.a_size = 3
-        elif self.env_id is 'battle':
-            print('scenarios is battle')
+        
+        self.a_size = 3
+        if self.env_id is 'battle':
+            print('scenarios is battle, action size is ', self.a_size)
             self.a_size = 4
-
+        else:
+            print('scenarios is my way home action size is ', self.a_size)
+            
         self.actions = self.button_combinations()
         self.reset()
     
