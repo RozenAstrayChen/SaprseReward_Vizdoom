@@ -120,12 +120,11 @@ class DoomEnvironment(Process):
         self.w = w
         
         self.a_size = 3
-        print(self.env_id)
         if self.env_id == "battle":
             self.a_size = 4
-            print('scenarios is battle, action size is ', self.a_size)
+            #print('scenarios is battle, action size is ', self.a_size)
         else:
-            print('scenarios is my way home action size is ', self.a_size)
+            #print('scenarios is my way home action size is ', self.a_size)
             
         self.actions = self.button_combinations()
         self.reset()
@@ -145,6 +144,10 @@ class DoomEnvironment(Process):
             game.add_available_button(Button.TURN_LEFT)
             game.add_available_button(Button.TURN_RIGHT)
             game.add_available_button(Button.ATTACK)
+            game.add_available_game_variable(GameVariable.AMMO2)
+            game.add_available_game_variable(GameVariable.HEALTH)
+            game.add_available_game_variable(GameVariable.USER2)
+            
         game.set_doom_map('map01')
         game.set_screen_resolution(ScreenResolution.RES_640X480)
         game.set_screen_format(ScreenFormat.RGB24)
@@ -155,17 +158,6 @@ class DoomEnvironment(Process):
         game.set_render_particles(True)
         # Enables labeling of the in game objects.
         game.set_labels_buffer_enabled(True)
-        game.clear_available_buttons()
-        game.add_available_button(Button.MOVE_FORWARD)
-        #game.add_available_button(Button.MOVE_RIGHT)
-        #game.add_available_button(Button.MOVE_LEFT)
-        game.add_available_button(Button.TURN_LEFT)
-        game.add_available_button(Button.TURN_RIGHT)
-        #game.add_available_button(Button.ATTACK)
-        #game.add_available_button(Button.SPEED)
-        #game.add_available_game_variable(GameVariable.AMMO2)
-        #game.add_available_game_variable(GameVariable.HEALTH)
-        #game.add_available_game_variable(GameVariable.USER2)
         game.set_episode_timeout(2100)
         game.set_episode_start_time(5)
         game.set_window_visible(self.is_render)
@@ -208,13 +200,25 @@ class DoomEnvironment(Process):
 
             if done:
                 self.recent_rlist.append(self.rall)
-                print(
-                    "[Episode {}({})] Step: {}  Reward: {}  Recent Reward: {}".format(
-                        self.episode,
-                        self.env_idx,
-                        self.steps,
-                        self.rall,
-                        np.mean(self.recent_rlist)))
+                if self.env_id == 'battle':
+                    print(
+                        "[Episode {}({})] Step: {}  Reward: {}  Recent Reward: {} Kill: {} Health: {} Ammunition: {}".format(
+                            self.episode,
+                            self.env_idx,
+                            self.steps,
+                            self.rall,
+                            np.mean(self.recent_rlist),
+                            self.env.get_game_variable(GameVariable.KILLCOUNT),
+                            self.env.get_game_variable(GameVariable.HEALTH),
+                            self.env.get_game_variable(GameVariable.AMMO2)))
+                else:
+                    print(
+                        "[Episode {}({})] Step: {}  Reward: {}  Recent Reward: {}".format(
+                            self.episode,
+                            self.env_idx,
+                            self.steps,
+                            self.rall,
+                            np.mean(self.recent_rlist)))
 
                 self.history = self.reset()
             self.child_conn.send([self.history[:, :, :], reward, force_done, done, log_reward])
