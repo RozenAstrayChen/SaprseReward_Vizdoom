@@ -118,14 +118,31 @@ class DoomEnvironment(Process):
         self.img_shape = (h, w)
         self.h = h
         self.w = w
-        self.a_size = 3
-        self.actions = self.button_combinations()
+        if self.env_id is 'my_way_home':
+            print('scenarios is my way home')
+            self.a_size = 3
+        elif self.env_id is 'battle':
+            print('scenarios is battle')
+            self.a_size = 4
 
+        self.actions = self.button_combinations()
         self.reset()
     
     def init_game(self):
         game = DoomGame()
-        game.load_config('../scenarios/my_way_home.cfg')
+        if self.env_id is 'my_way_home':
+            game.load_config('../scenarios/my_way_home.cfg')
+            game.clear_available_buttons()
+            game.add_available_button(Button.MOVE_FORWARD)
+            game.add_available_button(Button.TURN_LEFT)
+            game.add_available_button(Button.TURN_RIGHT)
+        elif self.env_id is 'battle':
+            game.load_config('../scenarios/D3_battle.cfg')
+            game.clear_available_buttons()
+            game.add_available_button(Button.MOVE_FORWARD)
+            game.add_available_button(Button.TURN_LEFT)
+            game.add_available_button(Button.TURN_RIGHT)
+            game.add_available_button(Button.ATTACK)
         game.set_doom_map('map01')
         game.set_screen_resolution(ScreenResolution.RES_640X480)
         game.set_screen_format(ScreenFormat.RGB24)
