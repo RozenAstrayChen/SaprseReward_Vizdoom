@@ -194,12 +194,12 @@ class DoomEnvironment(Process):
                 if np.random.rand() <= self.p:
                     action = self.last_action
                 self.last_action = action
-
+            self.get_variables()
             reward = self.env.make_action(self.actions[action], 4)
             done = self.env.is_episode_finished()
 
             if not done:
-                self.get_variables()
+                
                 s = self.env.get_state().screen_buffer
             
             log_reward = reward
