@@ -194,7 +194,8 @@ class DoomEnvironment(Process):
                 if np.random.rand() <= self.p:
                     action = self.last_action
                 self.last_action = action
-            
+                
+            self.get_variables()
             reward = self.env.make_action(self.actions[action], 4)
             done = self.env.is_episode_finished()
 
@@ -233,7 +234,7 @@ class DoomEnvironment(Process):
 
                 self.history = self.reset()
 
-            self.get_variables()
+            
             self.child_conn.send([self.history[:, :, :], reward, force_done, done, log_reward])
 
     def reset(self):
