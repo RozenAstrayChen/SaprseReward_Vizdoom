@@ -120,9 +120,10 @@ class DoomEnvironment(Process):
         self.w = w
         
         self.a_size = 3
-        if self.env_id is 'battle':
-            print('scenarios is battle, action size is ', self.a_size)
+        print(self.env_id)
+        if self.env_id == "battle":
             self.a_size = 4
+            print('scenarios is battle, action size is ', self.a_size)
         else:
             print('scenarios is my way home action size is ', self.a_size)
             
