@@ -21,8 +21,12 @@ def main():
         env = gym.make(env_id)
     elif env_type == 'vizdoom':
         input_size = (84, 84)
-        output_size = 3
-        print('vizdoom init')
+        if env_id == 'battle':
+            output_size = 4
+            print('vizdoom battle init')
+        elif env_id == 'my_way_home':
+            output_size = 3
+            print('vizdoom my way home init')
     else:
         raise NotImplementedError
 
