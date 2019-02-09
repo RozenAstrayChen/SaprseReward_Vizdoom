@@ -125,6 +125,7 @@ class DoomEnvironment(Process):
             #print('scenarios is battle, action size is ', self.a_size)
         else:
             #print('scenarios is my way home action size is ', self.a_size)
+            pass
             
         self.actions = self.button_combinations()
         self.reset()
