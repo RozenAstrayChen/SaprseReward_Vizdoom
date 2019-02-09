@@ -137,6 +137,7 @@ class DoomEnvironment(Process):
             game.add_available_button(Button.MOVE_FORWARD)
             game.add_available_button(Button.TURN_LEFT)
             game.add_available_button(Button.TURN_RIGHT)
+
         elif self.env_id is 'battle':
             game.load_config('../scenarios/D3_battle.cfg')
             game.clear_available_buttons()
@@ -166,6 +167,16 @@ class DoomEnvironment(Process):
         game.set_mode(Mode.PLAYER)
         game.init()
         return game
+    
+    def init_variables(self):
+        self.health = 100
+        self.kill = 0
+        self.ammo = 50
+    
+    def get_variables(self):
+        self.health = self.env.get_game_variable(GameVariable.HEALTH)
+        self.kill = self.env.get_game_variable(GameVariable.KILLCOUNT)
+        self.ammo = self.env.get_game_variable(GameVariable.AMMO2)
 
     def button_combinations(self):
         actions = np.identity(self.a_size, dtype=int).tolist()
@@ -174,6 +185,7 @@ class DoomEnvironment(Process):
     def run(self):
         super(DoomEnvironment, self).run()
         while True:
+            self.init_variables()
             action = self.child_conn.recv()
             #TODO work on render
             # sticky action
@@ -191,12 +203,10 @@ class DoomEnvironment(Process):
             log_reward = reward
             force_done = done
             self.history[:3, :, :] = self.history[1:, :, :]
-            s = self.pre_proc(s)
-            
-            self.history[3, :, :] = s
+            self.history[3, :, :] = self.pre_proc(s)
 
             self.rall += reward
-            self.steps +=1
+            self.steps += 1
 
             if done:
                 self.recent_rlist.append(self.rall)
@@ -208,9 +218,9 @@ class DoomEnvironment(Process):
                             self.steps,
                             self.rall,
                             np.mean(self.recent_rlist),
-                            self.env.get_game_variable(GameVariable.KILLCOUNT),
-                            self.env.get_game_variable(GameVariable.HEALTH),
-                            self.env.get_game_variable(GameVariable.AMMO2)))
+                            self.kill,
+                            self.health,
+                            self.ammo))
                 else:
                     print(
                         "[Episode {}({})] Step: {}  Reward: {}  Recent Reward: {}".format(
@@ -221,6 +231,8 @@ class DoomEnvironment(Process):
                             np.mean(self.recent_rlist)))
 
                 self.history = self.reset()
+
+            self.get_variables()
             self.child_conn.send([self.history[:, :, :], reward, force_done, done, log_reward])
 
     def reset(self):
