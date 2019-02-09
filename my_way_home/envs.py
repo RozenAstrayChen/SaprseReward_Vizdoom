@@ -195,6 +195,7 @@ class DoomEnvironment(Process):
                 if np.random.rand() <= self.p:
                     action = self.last_action
                 self.last_action = action
+                
             if self.is_render:
                 reward = self.env.make_action(self.actions[action])
             else:

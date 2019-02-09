@@ -153,8 +153,10 @@ def main():
             if rd:
                 intrinsic_reward_list = (intrinsic_reward_list - np.mean(intrinsic_reward_list)) / np.std(
                     intrinsic_reward_list)
+                '''
                 with open('int_reward', 'wb') as f:
                     pickle.dump(intrinsic_reward_list, f)
+                '''
                 steps = 0
                 rall = 0
             
