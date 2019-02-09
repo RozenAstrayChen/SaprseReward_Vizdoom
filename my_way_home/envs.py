@@ -185,7 +185,7 @@ class DoomEnvironment(Process):
 
     def run(self):
         super(DoomEnvironment, self).run()
-        self.init_variables()
+        #self.init_variables()
         while True:
             action = self.child_conn.recv()
             #TODO work on render
@@ -194,12 +194,12 @@ class DoomEnvironment(Process):
                 if np.random.rand() <= self.p:
                     action = self.last_action
                 self.last_action = action
+                
             self.get_variables()
             reward = self.env.make_action(self.actions[action], 4)
             done = self.env.is_episode_finished()
 
             if not done:
-                
                 s = self.env.get_state().screen_buffer
             
             log_reward = reward
