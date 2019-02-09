@@ -3,7 +3,7 @@ from envs import *
 from utils import *
 from config import *
 from torch.multiprocessing import Pipe
-
+import time 
 from tensorboardX import SummaryWriter
 
 import numpy as np
@@ -123,33 +123,38 @@ def main():
     rall = 0
     rd = False
     intrinsic_reward_list = []
-    while not rd:
-        steps += 1
-        actions, value_ext, value_int, policy = agent.get_action(np.float32(states) / 255.)
+    for i in range(1, 10):
+        while not rd:
+            if default_config['EnvType'] == 'vizdoom':
+                time.sleep(0.025)
 
-        for parent_conn, action in zip(parent_conns, actions):
-            parent_conn.send(action)
+            steps += 1
+            actions, value_ext, value_int, policy = agent.get_action(np.float32(states) / 255.)
 
-        next_states, rewards, dones, real_dones, log_rewards, next_obs = [], [], [], [], [], []
-        for parent_conn in parent_conns:
-            s, r, d, rd, lr = parent_conn.recv()
-            rall += r
-            next_states = s.reshape([1, 4, 84, 84])
-            next_obs = s[3, :, :].reshape([1, 1, 84, 84])
+            for parent_conn, action in zip(parent_conns, actions):
+                parent_conn.send(action)
 
-        # total reward = int reward + ext Reward
-        intrinsic_reward = agent.compute_intrinsic_reward(next_obs)
-        intrinsic_reward_list.append(intrinsic_reward)
-        states = next_states[:, :, :, :]
+            next_states, rewards, dones, real_dones, log_rewards, next_obs = [], [], [], [], [], []
+            for parent_conn in parent_conns:
+                s, r, d, rd, lr = parent_conn.recv()
+                rall += r
+                next_states = s.reshape([1, 4, 84, 84])
+                next_obs = s[3, :, :].reshape([1, 1, 84, 84])
 
-        if rd:
-            intrinsic_reward_list = (intrinsic_reward_list - np.mean(intrinsic_reward_list)) / np.std(
-                intrinsic_reward_list)
-            with open('int_reward', 'wb') as f:
-                pickle.dump(intrinsic_reward_list, f)
-            steps = 0
-            rall = 0
+            # total reward = int reward + ext Reward
+            intrinsic_reward = agent.compute_intrinsic_reward(next_obs)
+            intrinsic_reward_list.append(intrinsic_reward)
+            states = next_states[:, :, :, :]
 
+            if rd:
+                intrinsic_reward_list = (intrinsic_reward_list - np.mean(intrinsic_reward_list)) / np.std(
+                    intrinsic_reward_list)
+                with open('int_reward', 'wb') as f:
+                    pickle.dump(intrinsic_reward_list, f)
+                steps = 0
+                rall = 0
+            
+                
 
 if __name__ == '__main__':
     main()
