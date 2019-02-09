@@ -195,8 +195,11 @@ class DoomEnvironment(Process):
                 if np.random.rand() <= self.p:
                     action = self.last_action
                 self.last_action = action
-                
-            reward = self.env.make_action(self.actions[action], 4)
+            if self.is_render:
+                reward = self.env.make_action(self.actions[action])
+            else:
+                reward = self.env.make_action(self.actions[action], 4)
+
             self.get_variables()
             done = self.env.is_episode_finished()
 
@@ -251,12 +254,11 @@ class DoomEnvironment(Process):
         
 
     def pre_proc(self, X):
-        #x = cv2.cvtColor(X, cv2.COLOR_RGB2GRAY)
-        #x = cv2.resize(x, (self.h, self.w))
-        x = cv2.resize(X, (self.h, self.w), interpolation=cv2.INTER_LINEAR)
-        x = np.dot(x[..., :3], [0.299, 0.587, 0.114])
-        #X = np.array(Image.fromarray(X).convert('L')).astype('float32')
-        #x = cv2.resize(X, (self.h, self.w))
+        x = cv2.cvtColor(X, cv2.COLOR_RGB2GRAY)
+        x = cv2.resize(x, (self.h, self.w))
+        #x = cv2.resize(X, (self.h, self.w), interpolation=cv2.INTER_LINEAR)
+        #x = np.dot(x[..., :3], [0.299, 0.587, 0.114])
+  
         return x
     
     def get_init_state(self, s):
