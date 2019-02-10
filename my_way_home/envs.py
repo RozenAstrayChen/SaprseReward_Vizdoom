@@ -206,7 +206,6 @@ class DoomEnvironment(Process):
 
             if not done:
                 s = self.env.get_state().screen_buffer
-            
             log_reward = reward
             force_done = done
             self.history[:3, :, :] = self.history[1:, :, :]
@@ -255,12 +254,15 @@ class DoomEnvironment(Process):
         
 
     def pre_proc(self, X):
-        x = np.array(Image.fromarray(X).convert('L')).astype('float32')
-        x = cv2.resize(x, (84, 84))
+        x = cv2.resize(X, self.img_shape)
+        x = np.array(Image.fromarray(x).convert('L')).astype('float32')
+        #x = cv2.resize(X, (self.h, self.w), interpolation=cv2.INTER_LINEAR)
+        #x = np.dot(x[..., :3], [0.299, 0.587, 0.114])
 
         return x
     
     def get_init_state(self, s):
+        print('init')
         for i in range(self.history_size):
             self.history[i, :, :] = self.pre_proc(s)
 
@@ -381,8 +383,8 @@ class AtariEnvironment(Environment):
         return self.history[:, :, :]
 
     def pre_proc(self, X):
-        X = np.array(Image.fromarray(X).convert('L')).astype('float32')
-        x = cv2.resize(X, (self.h, self.w))
+        x = np.array(Image.fromarray(X).convert('L')).astype('float32')
+        x = cv2.resize(x, (self.h, self.w))
         return x
 
     def get_init_state(self, s):
