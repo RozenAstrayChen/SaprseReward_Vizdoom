@@ -262,7 +262,6 @@ class DoomEnvironment(Process):
         return x
     
     def get_init_state(self, s):
-        print('init')
         for i in range(self.history_size):
             self.history[i, :, :] = self.pre_proc(s)
 
