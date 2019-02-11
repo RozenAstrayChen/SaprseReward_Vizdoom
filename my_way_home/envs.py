@@ -164,7 +164,7 @@ class DoomEnvironment(Process):
         game.set_episode_start_time(5)
         game.set_window_visible(self.is_render)
         game.set_sound_enabled(False)
-        game.set_living_reward(0)
+        #game.set_living_reward(0)
         game.set_mode(Mode.PLAYER)
         game.init()
         return game
