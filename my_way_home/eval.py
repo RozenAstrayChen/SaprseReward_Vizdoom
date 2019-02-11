@@ -120,17 +120,17 @@ def main():
         works.append(work)
         parent_conns.append(parent_conn)
         child_conns.append(child_conn)
-
-    states = np.zeros([num_worker, 4, 84, 84])
+ 
     print('start enjoy!')
-    steps = 0
-    rall = 0
-    rd = False
-    intrinsic_reward_list = []
     for i in range(1, 10):
+        states = np.zeros([num_worker, 4, 84, 84]) 
+        steps = 0
+        rall = 0
+        rd = False
+        intrinsic_reward_list = []
         while not rd:
             if default_config['EnvType'] == 'vizdoom':
-                time.sleep(0.025)
+                time.sleep(0.005)
 
             steps += 1
             actions, value_ext, value_int, policy = agent.get_action(np.float32(states) / 255.)
