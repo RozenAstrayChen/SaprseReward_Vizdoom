@@ -129,7 +129,7 @@ def main():
         intrinsic_reward_list = []
         while not rd:
             if default_config['EnvType'] == 'vizdoom':
-                time.sleep(0.025)
+                time.sleep(0.001)
 
             steps += 1
             actions, value_ext, value_int, policy = agent.get_action(np.float32(states) / 255.)
