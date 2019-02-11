@@ -13,25 +13,29 @@ game.init()
 
 game.new_episode()
 X = game.get_state().screen_buffer
-print(X.shape)
+#print(X.shape)
+
 x = np.array(Image.fromarray(X).convert('L')).astype('float32')
 x = cv2.resize(x, (84, 84))
-print('x',x.shape)
+print('x',x/255)
+
+print('\n')
 
 x1 = cv2.resize(X, (84, 84))
 x1 = np.array(Image.fromarray(x1).convert('L')).astype('float32')
-print('x1',x1.shape)
+print('x1',x1/255)
 
-print('x1 is sample as x2 ?',(x==x).all())
+print('\n')
+#print('x1 is sample as x2 ?',(x==x).all())
 '''
 plt.imshow(x, cmap='gray')
 plt.show()
 '''
-'''
+
 x2 = cv2.resize(X, (84, 84), interpolation=cv2.INTER_LINEAR)
 x2 = np.dot(x2[..., :3], [0.299, 0.587, 0.114])
-print('x2', x2.shape)
-plt.imshow(x2, cmap='gray')
-plt.show()
-'''
+print('x2 data', x2/255)
+#plt.imshow(x2, cmap='gray')
+#plt.show()
+
 
