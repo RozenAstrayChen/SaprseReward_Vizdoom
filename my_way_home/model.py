@@ -119,7 +119,7 @@ class CnnActorCriticNetwork(nn.Module):
 
         self.extra_layer = nn.Sequential(
             linear(256, 256),
-            nn.ReLU()
+            nn.ELU()
         )
 
         self.critic_ext = linear(256, 1)
@@ -190,7 +190,7 @@ class RNDModel(nn.Module):
                 out_channels=32,
                 kernel_size=3,
                 stride=2),
-            nn.ELU()
+            nn.ELU(),
             Flatten(),
             nn.Linear(feature_output, 256)
         )
@@ -221,7 +221,7 @@ class RNDModel(nn.Module):
                 stride=2),
             nn.ELU(),
             Flatten(),
-            nn.Linear(feature_output, 512)
+            nn.Linear(feature_output, 256)
         )
 
         for p in self.modules():
