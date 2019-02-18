@@ -8,7 +8,7 @@ from tensorboardX import SummaryWriter
 
 import numpy as np
 import pickle
-
+image_size = 42
 
 def main():
     print({section: dict(config[section]) for section in config.sections()})
@@ -20,7 +20,7 @@ def main():
     elif env_type == 'atari':
         env = gym.make(env_id)
     elif env_type == 'vizdoom':
-        input_size = (84, 84)
+        input_size = (image_size, image_size)
         if env_id == 'battle':
             output_size = 4
             print('vizdoom battle init')
@@ -123,7 +123,7 @@ def main():
  
     print('start enjoy!')
     for i in range(1, 10):
-        states = np.zeros([num_worker, 4, 84, 84]) 
+        states = np.zeros([num_worker, 4, image_size, image_size]) 
         steps = 0
         rall = 0
         rd = False
@@ -142,8 +142,8 @@ def main():
             for parent_conn in parent_conns:
                 s, r, d, rd, lr = parent_conn.recv()
                 rall += r
-                next_states = s.reshape([1, 4, 84, 84])
-                next_obs = s[3, :, :].reshape([1, 1, 84, 84])
+                next_states = s.reshape([1, 4, image_size, image_size])
+                next_obs = s[3, :, :].reshape([1, 1, image_size, image_size])
 
             # total reward = int reward + ext Reward
             intrinsic_reward = agent.compute_intrinsic_reward(next_obs)

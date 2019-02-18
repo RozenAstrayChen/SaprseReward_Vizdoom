@@ -93,8 +93,8 @@ class DoomEnvironment(Process):
                  child_conn,
                  history_size=4,
                  life_done=True,
-                 h=84,
-                 w=84,
+                 h=42,
+                 w=42,
                  sticky_action=True,
                  p=0.25):
         super(DoomEnvironment, self).__init__()
@@ -300,8 +300,8 @@ class AtariEnvironment(Environment):
                  env_idx,
                  child_conn,
                  history_size=4,
-                 h=84,
-                 w=84,
+                 h=42,
+                 w=42,
                  life_done=True,
                  sticky_action=True,
                  p=0.25):
@@ -401,8 +401,8 @@ class MarioEnvironment(Process):
             child_conn,
             history_size=4,
             life_done=True,
-            h=84,
-            w=84, movement=COMPLEX_MOVEMENT, sticky_action=True,
+            h=42,
+            w=42, movement=COMPLEX_MOVEMENT, sticky_action=True,
             p=0.25):
         super(MarioEnvironment, self).__init__()
         self.daemon = True

@@ -7,7 +7,7 @@ from torch.multiprocessing import Pipe
 from tensorboardX import SummaryWriter
 
 import numpy as np
-
+image_size = 42
 
 def main():
     print({section: dict(config[section]) for section in config.sections()})
@@ -22,7 +22,7 @@ def main():
     elif env_type == 'atari':
         env = gym.make(env_id)
     elif env_type == 'vizdoom':
-        input_size = (84, 84)
+        input_size = (image_size, image_size)
         if env_id == 'battle':
             output_size = 4
             print('vizdoom battle init')
@@ -76,7 +76,7 @@ def main():
     life_done = default_config.getboolean('LifeDone')
 
     reward_rms = RunningMeanStd()
-    obs_rms = RunningMeanStd(shape=(1, 1, 84, 84))
+    obs_rms = RunningMeanStd(shape=(1, 1, image_size, image_size))
     pre_obs_norm_step = int(default_config['ObsNormStep'])
     discounted_reward = RewardForwardFilter(int_gamma)
 
@@ -130,7 +130,7 @@ def main():
         parent_conns.append(parent_conn)
         child_conns.append(child_conn)
     print('init work dones')
-    states = np.zeros([num_worker, 4, 84, 84])
+    states = np.zeros([num_worker, 4, image_size, image_size])
 
     sample_episode = 0
     sample_rall = 0
@@ -151,7 +151,7 @@ def main():
 
         for parent_conn in parent_conns:
             s, r, d, rd, lr = parent_conn.recv()
-            next_obs.append(s[3, :, :].reshape([1, 84, 84]))
+            next_obs.append(s[3, :, :].reshape([1, image_size, image_size]))
 
         if len(next_obs) % (num_step * num_worker) == 0:
             next_obs = np.stack(next_obs)
@@ -180,7 +180,7 @@ def main():
                 dones.append(d)
                 real_dones.append(rd)
                 log_rewards.append(lr)
-                next_obs.append(s[3, :, :].reshape([1, 84, 84]))
+                next_obs.append(s[3, :, :].reshape([1, image_size, image_size]))
 
             next_states = np.stack(next_states)
             rewards = np.hstack(rewards)
@@ -225,11 +225,11 @@ def main():
         total_int_values.append(value_int)
         # --------------------------------------------------
 
-        total_state = np.stack(total_state).transpose([1, 0, 2, 3, 4]).reshape([-1, 4, 84, 84])
+        total_state = np.stack(total_state).transpose([1, 0, 2, 3, 4]).reshape([-1, 4, image_size, image_size])
         total_reward = np.stack(total_reward).transpose().clip(-1, 1)
         total_action = np.stack(total_action).transpose().reshape([-1])
         total_done = np.stack(total_done).transpose()
-        total_next_obs = np.stack(total_next_obs).transpose([1, 0, 2, 3, 4]).reshape([-1, 1, 84, 84])
+        total_next_obs = np.stack(total_next_obs).transpose([1, 0, 2, 3, 4]).reshape([-1, 1, image_size, image_size])
         total_ext_values = np.stack(total_ext_values).transpose()
         total_int_values = np.stack(total_int_values).transpose()
         total_logging_policy = np.vstack(total_policy_np)
