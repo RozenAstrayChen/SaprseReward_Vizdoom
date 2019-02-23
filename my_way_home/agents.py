@@ -58,9 +58,9 @@ class RNDAgent(object):
         state = state.float()
         policy, value_ext, value_int = self.model(state)
         action_prob = F.softmax(policy, dim=-1).data.cpu().numpy()
-
+        #print('action prob', action_prob)
         action = self.random_choice_prob_index(action_prob)
-
+        #print('action', action)
         return action, value_ext.data.cpu().numpy().squeeze(), value_int.data.cpu().numpy().squeeze(), policy.detach()
 
     @staticmethod
