@@ -197,7 +197,7 @@ class DoomEnvironment(Process):
                 self.last_action = action
                 
             if self.is_render:
-                reward = self.env.make_action(self.actions[action])
+                reward = self.env.make_action(self.actions[action], 4)
             else:
                 reward = self.env.make_action(self.actions[action], 4)
 
