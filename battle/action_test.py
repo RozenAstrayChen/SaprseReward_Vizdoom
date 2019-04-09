@@ -1,0 +1,2 @@
+from vizdoom import *
+
