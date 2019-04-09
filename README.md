@@ -1,4 +1,4 @@
-# Vizdoom implement
+# Sparse reward on Vizdoom 
 
 This is repositories is learning how to slove sparse reward.
 
@@ -16,4 +16,8 @@ $ cd my_way_home
 $ python eval.py
 ```
 
-After training the result is save on ```/my_way_home/models```
+## Save
+After training the result is save on ```/my_way_home/models/my_way_home*```
+
+## Result
+https://www.youtube.com/watch?v=FFKZiZ1Dt8g
