@@ -1,7 +1,8 @@
+import numpy as np
 # coding: utf-8
 
 IMG_SHAPE = (80, 80)
-a_size = 3
+a_size = 4
 model_path = './check_point/D3_battle/'
 #model_file = 'model-51000.ckpt'
 model_file = 'model-9000.ckpt'
@@ -9,14 +10,17 @@ model_file = 'model-9000.ckpt'
 #model_file = 'model-41050.ckpt'
 
 SCENARIO_PATH = '../scenarios/D3_battle.cfg'
+#SCENARIO_PATH = '../scenarios/basic.cfg'
+
 
 IS_SUPREME_VERSION = True
-IS_TRAIN = True
-AGENTS_NUM = 16
+IS_TRAIN = False
+LOAD_MODEL = True
+AGENTS_NUM = 32
 
 HIST_LEN = 4
 
-
+'''
 def button_combinations():
     actions = []
     m_forward = [[True], [False]]  # move forward
@@ -31,6 +35,20 @@ def button_combinations():
                 for m in attack:
                     #for n in speed:
                     actions.append(i+j+k+m)
+    return actions
+'''
+
+'''
+7 action type
+    0. forward
+    4. turn left
+    5. turn right
+    7. shot
+'''
+
+
+def button_combinations():
+    actions = np.identity(a_size, dtype=int).tolist()
     return actions
 
 ACTION_DIM = len(button_combinations())

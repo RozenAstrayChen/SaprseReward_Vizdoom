@@ -28,7 +28,7 @@ class ACNetwork(object):
                                       kernel_size=[4, 4], stride=2, padding='SAME')
             self.conv_3 = slim.conv2d(activation_fn=tf.nn.relu, inputs=self.conv_2, num_outputs=64,
                                       kernel_size=[3, 3], stride=1, padding='SAME')
-            self.fc = slim.fully_connected(slim.flatten(self.conv_3), 512, activation_fn=tf.nn.elu)
+            self.fc = slim.fully_connected(slim.flatten(self.conv_3), 512, activation_fn=tf.nn.relu)
             self.new_fc = tf.concat([self.fc, self.game_variables], axis=1)
 
             self.policy = slim.fully_connected(self.new_fc,

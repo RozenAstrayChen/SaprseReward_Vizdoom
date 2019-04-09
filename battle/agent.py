@@ -25,7 +25,7 @@ class Agent(object):
         self.play = play
         self.summary_step = 3
 
-        self.visualizer = utils.Visualiser()
+        #self.visualizer = utils.Visualiser()
 
         self.name = cfg.AGENT_PREFIX + str(name)
         self.number = name
@@ -67,9 +67,10 @@ class Agent(object):
         game.set_render_particles(True)
         # Enables labeling of the in game objects.
         game.set_labels_buffer_enabled(True)
+        game.clear_available_buttons()
         game.add_available_button(Button.MOVE_FORWARD)
-        game.add_available_button(Button.MOVE_RIGHT)
-        game.add_available_button(Button.MOVE_LEFT)
+        #game.add_available_button(Button.MOVE_RIGHT)
+        #game.add_available_button(Button.MOVE_LEFT)
         game.add_available_button(Button.TURN_LEFT)
         game.add_available_button(Button.TURN_RIGHT)
         game.add_available_button(Button.ATTACK)
@@ -186,10 +187,13 @@ class Agent(object):
 
                     if end is True:
                         self.episode_health.append(self.env.get_game_variable(GameVariable.HEALTH))
-                        self.episode_kills.append(self.env.get_game_variable(GameVariable.USER2))
+                        #self.episode_kills.append(self.env.get_game_variable(GameVariable.USER2))
+                        self.episode_kills.append(self.env.get_game_variable(GameVariable.KILLCOUNT))
                         print('{}, health: {}, kills: {}, episode #{}, reward: {}, steps:{}, time costs:{}'.format(
                             self.name, self.env.get_game_variable(GameVariable.HEALTH),
-                            self.env.get_game_variable(GameVariable.USER2), episode_count,
+                            # self.env.get_game_variable(GameVariable.USER2), 
+                            self.env.get_game_variable(GameVariable.KILLCOUNT), 
+                            episode_count,
                             episode_reward, episode_step_count, time.time()-episode_st))
                         break
 
@@ -204,7 +208,7 @@ class Agent(object):
 
                 # Periodically save gifs of episodes, model parameters, and summary statistics.
                 if episode_count % 5 == 0 and episode_count != 0:
-                    if episode_count % 200 == 0 and self.name == cfg.AGENT_MONITOR:
+                    if episode_count % 1000 == 0 and self.name == cfg.AGENT_MONITOR:
                         saver.save(sess, self.model_path+'/model-'+str(episode_count)+'.ckpt')
                         print("Episode count {}, saved Model, time costs {}".format(episode_count, time.time()-start_t))
                         start_t = time.time()
@@ -232,7 +236,7 @@ class Agent(object):
                 if self.name == cfg.AGENT_MONITOR:
                     sess.run(self.increment)
                 episode_count += 1
-                if episode_count == 120000:  # thread to stop
+                if episode_count == 10000:  # thread to stop
                     print("Stop training name:{}".format(self.name))
                     coord.request_stop()
 
@@ -241,7 +245,7 @@ class Agent(object):
         if not isinstance(sess, tf.Session):
             raise TypeError('saver should be tf.train.Saver')
 
-        self.visualizer.init()
+        #self.visualizer.init()
 
         for i in range(episode_num):
 
@@ -258,7 +262,6 @@ class Agent(object):
             s_t = time.time()
 
             while not self.env.is_episode_finished():
-                sleep(0.05)
                 game_vars = self.env.get_state().game_variables
                 state = [s, game_vars[:-1]]
 
@@ -267,7 +270,7 @@ class Agent(object):
                 if step >= cfg.SKIP_FRAME_NUM:
                     reward_list.append(reward)
                     value_list.append(v[0, 0])
-                    self.visualizer.visualize(s, game_vars, self.actions[a_index], reward_list, value_list)
+                    #self.visualizer.visualize(s, game_vars, self.actions[a_index], reward_list, value_list)
 
                 if end:
                     break
@@ -284,7 +287,7 @@ class Agent(object):
                 print('Current action: ', self.actions[a_index])
                 print('Current game variables: ', self.env.get_state().game_variables)
                 print('Current reward: {0}'.format(reward))
-                time.sleep(0.05)
+                time.sleep(0.01)
             print('End episode: {}, Total Reward: {}'.format(i, episode_rewards))
             print('time costs: {}'.format(time.time() - s_t))
             time.sleep(5)
@@ -300,9 +303,11 @@ class Agent(object):
         })
         a_index = self.choose_action_index(a_dist[0], deterministic=False)
         if self.play:
-            self.env.make_action(self.actions[a_index])
+            env_r = self.env.make_action(self.actions[a_index])
+            
         else:
-            self.env.make_action(self.actions[a_index], cfg.SKIP_FRAME_NUM)
+            env_r = self.env.make_action(self.actions[a_index], cfg.SKIP_FRAME_NUM)
+            
 
         reward = self.reward_function()
         end = self.env.is_episode_finished()
@@ -324,8 +329,10 @@ class Agent(object):
         return len(policy) - 1
 
     def reward_function(self):
-        kills_delta = self.env.get_game_variable(GameVariable.USER2) - self.last_total_kills
-        self.last_total_kills = self.env.get_game_variable(GameVariable.USER2)
+        #kills_delta = self.env.get_game_variable(GameVariable.USER2) - self.last_total_kills
+        #self.last_total_kills = self.env.get_game_variable(GameVariable.USER2)
+        kills_delta = self.env.get_game_variable(GameVariable.KILLCOUNT) - self.last_total_kills
+        self.last_total_kills = self.env.get_game_variable(GameVariable.KILLCOUNT)
 
         ammo_delta = self.env.get_game_variable(GameVariable.AMMO2) - self.last_total_ammos
         self.last_total_ammos = self.env.get_game_variable(GameVariable.AMMO2)
